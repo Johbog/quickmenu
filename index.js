@@ -7,7 +7,7 @@ const icons = {
 module.exports = {
   name: 'QuickMenu',
   purpose: 'A quick menu',
-  version: '1.0.0',
+  version: '1.0.1',
   author: 'Johan Bogaers',
   vendor: 'Webdesq BV',
   requires: [],
