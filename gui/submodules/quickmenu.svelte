@@ -90,7 +90,7 @@
   let selected, filter = '';
 
   let pins = localStorage[`${storekey}/pins`] ? JSON.parse(localStorage[`${storekey}/pins`]) : [];
-  $: if (JSON.stringify(pins) !== localStorage[`${storekey}.pins`]) {
+  $: if (JSON.stringify(pins) !== localStorage[`${storekey}/pins`]) {
     localStorage[`${storekey}/pins`] = JSON.stringify(pins);
   }
 
