@@ -7,9 +7,9 @@ const icons = {
 module.exports = {
   name: 'QuickMenu',
   purpose: 'A quick menu',
-  version: '1.0.1',
+  version: '1.0.2',
   author: 'Johan Bogaers',
-  vendor: 'Webdesq BV',
+  vendor: 'Johbog',
   requires: [],
   features: {},
   icon: icons.magnifier,
