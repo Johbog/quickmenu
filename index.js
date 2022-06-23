@@ -7,7 +7,7 @@ const icons = {
 module.exports = {
   name: 'QuickMenu',
   purpose: 'A quick menu',
-  version: '1.0.2',
+  version: '1.0.3',
   author: 'Johan Bogaers',
   vendor: 'Johbog',
   requires: [],
@@ -27,7 +27,7 @@ module.exports = {
       handler: async function () {
         const extension = {
           id: 'quickmenu',
-          code: 'submodules/webdesq/quickmenu',
+          code: 'submodules/johbog/quickmenu',
           zones: {
             userinfo: true,
           },
