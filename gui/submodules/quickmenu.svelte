@@ -69,11 +69,18 @@
 
     return highlighted;
   }
+
+  const hints = [
+    [ '<m> to hide', '<kbd>esc</kbd>' ],
+    [ '<m> to navigate', '<kbd>↑</kbd> <kbd>↓</kbd>' ],
+    [ '<m> to select', '<kbd>↵</kbd>' ],
+    [ '<m> to pin', '<kbd>shift</kbd> + <kbd>↵</kbd>' ],
+  ];
 </script>
 
 <script>
   import { tick } from 'svelte';
-  import { fly } from 'svelte/transition';
+  import { fly, fade } from 'svelte/transition';
   import { language, translate } from 'helpers/webdesq/stores.js';
 
   export let title;
@@ -173,18 +180,27 @@
 
   $: _extensions = Object.entries(extensions);
 
+  let selectedHint = 0;
+
+  let selectedHintInterval;
   export async function toggle() {
+    selectedHintInterval && clearTimeout(selectedHintInterval);
+
     if (visible) {
       visible = false;
       selected = null;
       filter = '';
       suggestions = {};
     }
+
     else {
       visible = true;
       await tick();
       document.body.append(nodes.panel);
       nodes.input.focus();
+      selectedHintInterval = setInterval(() => {
+        selectedHint = (selectedHint === (hints.length - 1)) ? 0 : (selectedHint + 1);
+      }, 4000);
     }
   }
 
@@ -395,10 +411,11 @@
       {/if}
       <div class="quick-menu-footer">
         <!-- TODO: show single hint and rotate between each -->
-        <span class="hint">{@html translate('<m> to hide', [ '<kbd>esc</kbd>', $language ])}</span>
-        <span class="hint">{@html translate('<m> to navigate', [ '<kbd>↑</kbd> <kbd>↓</kbd>', $language ])}</span>
-        <span class="hint">{@html translate('<m> to select', [ '<kbd>↵</kbd>', $language ])}</span>
-        <span class="hint">{@html translate('<m> to pin', [ '<kbd>shift</kbd> + <kbd>↵</kbd>', $language ])}</span>
+        {#each hints as [ text, ...details ], i}
+          {#if i === selectedHint}
+            <span class="hint" in:fade|local="{{ duration: 500 }}">{@html translate(text, [ ...details, $language ])}</span>
+          {/if}
+        {/each}
       </div>
     </div>
   </div>
