@@ -180,9 +180,8 @@
 
   $: _extensions = Object.entries(extensions);
 
-  let selectedHint = 0;
+  let selectedHint = 0, selectedHintInterval, showAllHints;
 
-  let selectedHintInterval;
   export async function toggle() {
     selectedHintInterval && clearTimeout(selectedHintInterval);
 
@@ -190,6 +189,7 @@
       visible = false;
       selected = null;
       filter = '';
+      showAllHints = false;
       suggestions = {};
     }
 
@@ -412,10 +412,11 @@
       <div class="quick-menu-footer">
         <!-- TODO: show single hint and rotate between each -->
         {#each hints as [ text, ...details ], i}
-          {#if i === selectedHint}
-            <span class="hint" in:fade|local="{{ duration: 500 }}">{@html translate(text, [ ...details, $language ])}</span>
+          {#if showAllHints || (i === selectedHint)}
+            <div class="hint" in:fade|local="{{ duration: showAllHints ? 0 : 500 }}">{@html translate(text, [ ...details, $language ])}</div>
           {/if}
         {/each}
+        <span class="info" aria-label="{translate('show all hints')}" on:click="{() => (showAllHints = !showAllHints)}">?</span>
       </div>
     </div>
   </div>
@@ -543,17 +544,48 @@
   }
 
   .quick-menu-footer {
+    position: relative;
     box-shadow: inset;
-    padding: .5em var(--quick-menu-padding);
+    padding: .5em calc(var(--quick-menu-padding) + 2em) .5em var(--quick-menu-padding);
     box-shadow: 0 3px 4px -4px rgba(0,0,0, 0.5) inset;
     background-color: rgba(0,0,0, 0.03);
     font-size: 0.9em;
     display: flex;
+    flex-wrap: wrap;
+  }
+
+  .quick-menu-footer .hint {
+    width: 100%;
   }
 
   .quick-menu-footer .hint + .hint {
-    margin-left: 1em;
+    margin-top: .3em;
   }
+
+  .quick-menu-footer .info {
+    display: inline-block;
+    position: absolute;
+    top: .5em;
+    right: var(--quick-menu-padding);
+    width: 1.7em;
+    height: 1.7em;
+    line-height: 1.7em;
+    text-align: center;
+    font-size: .9em;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 50%;
+    color: #465a84;
+    background-color: #fff;
+    box-shadow: 0 1px 2px -1px rgba(0,0,0, 0.5);
+    cursor: pointer;
+  }
+
+  .quick-menu-footer .info:active {
+    box-shadow: none;
+  }
+
+
 
   .quick-menu-footer .hint :global(kbd) {
     background-color: #465a84;
