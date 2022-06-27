@@ -410,13 +410,12 @@
         </ul>
       {/if}
       <div class="quick-menu-footer">
-        <!-- TODO: show single hint and rotate between each -->
         {#each hints as [ text, ...details ], i}
           {#if showAllHints || (i === selectedHint)}
             <div class="hint" in:fade|local="{{ duration: showAllHints ? 0 : 500 }}">{@html translate(text, [ ...details, $language ])}</div>
           {/if}
         {/each}
-        <span class="info" aria-label="{translate('show all hints')}" on:click="{() => (showAllHints = !showAllHints)}">?</span>
+        <button class="info" aria-label="{translate('show all hints')}" on:click="{() => (showAllHints = !showAllHints)}">?</button>
       </div>
     </div>
   </div>
@@ -569,16 +568,22 @@
     right: var(--quick-menu-padding);
     width: 1.7em;
     height: 1.7em;
-    line-height: 1.7em;
+    line-height: 1.3em;
     text-align: center;
-    font-size: .9em;
+    font-size: .85em;
     font-weight: 700;
+    padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     border-radius: 50%;
     color: #465a84;
-    background-color: #fff;
+    background-color: #ffffff;
     box-shadow: 0 1px 2px -1px rgba(0,0,0, 0.5);
     cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .quick-menu-footer .info:focus {
+    border-color: currentColor;
   }
 
   .quick-menu-footer .info:active {
