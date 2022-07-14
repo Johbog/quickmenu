@@ -80,7 +80,7 @@
 
 <script>
   import { tick } from 'svelte';
-  import { fly, fade } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
   import { language, translate } from 'helpers/webdesq/stores.js';
 
   export let title;
@@ -89,16 +89,16 @@
   $: title = title || translate('Quick Menu', $language);
 
   const nodes = {};
-  const storekey = 'johbog/quickmenu';
+  const storekey = 'johbog/quickmenu/pins';
 
   let visible = false;
 
   let suggestions = {};
   let selected, filter = '';
 
-  let pins = localStorage[`${storekey}/pins`] ? JSON.parse(localStorage[`${storekey}/pins`]) : [];
-  $: if (JSON.stringify(pins) !== localStorage[`${storekey}/pins`]) {
-    localStorage[`${storekey}/pins`] = JSON.stringify(pins);
+  let pins = localStorage[storekey] ? JSON.parse(localStorage[storekey]) : [];
+  $: if (JSON.stringify(pins) !== localStorage[storekey]) {
+    localStorage[storekey] = JSON.stringify(pins);
   }
 
   $: selectable = Object.entries(suggestions).flatMap(([ key, cluster ]) => {
@@ -412,7 +412,7 @@
       <div class="quick-menu-footer">
         {#each hints as [ text, ...details ], i}
           {#if showAllHints || (i === selectedHint)}
-            <div class="hint" in:fade|local="{{ duration: showAllHints ? 0 : 500 }}">{@html translate(text, [ ...details, $language ])}</div>
+            <div class="hint">{@html translate(text, [ ...details, $language ])}</div>
           {/if}
         {/each}
         <button class="info" aria-label="{translate('show all hints')}" on:click="{() => (showAllHints = !showAllHints)}">?</button>
