@@ -1,5 +1,5 @@
 <script context="module">
-  export function fuzzy(string, match) {
+  export function fuzzy_simple(string, match) {
     const _string = string.toLowerCase();
     const _match = match.toLowerCase();
 
@@ -12,6 +12,32 @@
       }
     }
     return offset > -1;
+  }
+
+  export function fuzzy(string, match) {
+    const _string = string.toLowerCase();
+    const _match = match.toLowerCase();
+
+    let offset = -1;
+    const ranges = [];
+    for (const part of _match) {
+      offset = _string.indexOf(part, (offset + 1));
+      if (offset === -1) {
+        return 0;
+      }
+
+      if (ranges.length) {
+        const lastRange = ranges[ranges.length - 1];
+
+        if ((offset - lastRange[lastRange.length - 1]) === 1) {
+          lastRange.push(offset);
+          continue;
+        }
+      }
+
+      ranges.push([ offset ]);
+    }
+    return ranges.length;
   }
 
 
@@ -311,7 +337,7 @@
   async function loadSuggestions(filter, pins) {
     await tick();
 
-    const _suggestions = {};
+    const suggestionEntries = [];
 
     const pinned = {
       title: 'Pinned',
@@ -319,7 +345,11 @@
     };
 
     const match = filter.trim();
+
+    const highestWeight = {};
+
     for (const [ key, extension ] of _extensions) {
+      highestWeight[key] = 0;
 
       const options = typeof extension.options === 'function' ? await extension.options() : extension.options;
 
@@ -328,20 +358,39 @@
         options: [],
       };
 
-      options.forEach(option => {
-        const tested = match ? fuzzy(option.title, match) : false;
-        if (tested) {
-          cluster.options.push(option);
+      const _options = options.flatMap(option => {
+        const weight = match ? fuzzy(option.title, match) : 0;
+        if (!weight) {
+          // No weight, filter out
+          return [];
         }
-        if ((!match || tested) && option.id && pins.includes(option.id)) {
-          pinned.options.push(option);
+
+        if (highestWeight[key] < weight) {
+          highestWeight[key] = weight;
         }
+
+        const pinned =  option.id && pins.includes(option.id);
+        return { weight, option, pinned };
       });
 
+      cluster.options = _options.sort((left, right) => {
+        const position = (left.weight < right.weight) ? -1 : (right.weight < left.weight) ? 1 : 0;
+        return position;
+      }).map(item => item.option);
+
       if (cluster.options.length) {
-        _suggestions[key] = cluster;
+        suggestionEntries.push([ key, cluster ]);
       }
     }
+
+    const sortedEntries = suggestionEntries.sort((left, right) => {
+      const leftWeight = highestWeight[left[0]];
+      const rightWeight = highestWeight[right[0]];
+      const position = (leftWeight < rightWeight) ? -1 : (rightWeight < leftWeight) ? 1 : 0;
+      return position;
+    });
+
+    const _suggestions = Object.fromEntries(sortedEntries);
 
     if (pinned.options.length) {
       suggestions = Object.assign({ pinned }, _suggestions);
