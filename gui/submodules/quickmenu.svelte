@@ -491,7 +491,8 @@
     overflow: auto;
     box-sizing: border-box;
     background-color: #fff;
-    box-shadow: 0 3px 6px -1px rgba(0,0,0, 0.25);
+
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2), 0px 3px 12px rgba(0,0,0, 0.2);
     display: flex;
     flex-direction: column;
   }
