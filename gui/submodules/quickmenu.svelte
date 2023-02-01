@@ -589,9 +589,8 @@
 
   .quick-menu-footer {
     position: relative;
-    box-shadow: inset;
     padding: .5em calc(var(--quick-menu-padding) + 2em) .5em var(--quick-menu-padding);
-    box-shadow: 0 3px 4px -4px rgba(0,0,0, 0.5) inset;
+    box-shadow: 0 3px 3px -3px rgba(0,0,0, 0.2) inset;
     background-color: rgba(0,0,0, 0.03);
     font-size: 0.9em;
     display: flex;
@@ -622,7 +621,7 @@
     border-radius: 50%;
     color: #465a84;
     background-color: #ffffff;
-    box-shadow: 0 1px 2px -1px rgba(0,0,0, 0.5);
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 3px rgba(0,0,0, 0.2);
     cursor: pointer;
     border: 1px solid transparent;
   }
@@ -640,7 +639,7 @@
   .quick-menu-footer .hint :global(kbd) {
     background-color: #465a84;
     border-radius: 3px;
-    box-shadow: 0 1px 2px -1px rgba(0,0,0, 0.5);
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2), 0px 1px 3px rgba(0,0,0, 0.2);
     color: #f2f3f6;
     display: inline-block;
     font-size: .9em;
