@@ -119,7 +119,6 @@
 
   const extensions = {};
   app.register('extendQuickMenu', ({ id, title, options }) => {
-    console.log(id, title, options);
     extensions[id] = {
       title: title,
       options: options.map((option, index) => {
