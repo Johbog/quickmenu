@@ -108,12 +108,26 @@
 </script>
 
 <script>
-  import { tick } from 'svelte';
+  import { tick, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { language, translate } from 'helpers/webdesq/stores.js';
 
   const nodes = {};
   const storekey = 'johbog/quickmenu/pins';
+
+  const app = getContext('app');
+
+  const extensions = {};
+  app.register('extendQuickMenu', ({ id, title, options }) => {
+    console.log(id, title, options);
+    extensions[id] = {
+      title: title,
+      options: options.map((option, index) => {
+        const _option = Object.assign({}, option, { index });
+        return _option;
+      }),
+    };
+  });
 
   let visible = false;
 
@@ -134,7 +148,8 @@
     selected = null;
   }
 
-  const extensions = {
+  // TODO: cleanup, move to plugins where needed...
+  const extensionsOld = {
     toolbar: {
       title: 'Toolbar',
       options: () => {
@@ -443,7 +458,9 @@
                 class:pinned="{option.id ? pins.includes(option.id) : false}"
                 on:click="{() => onOptionClick(option)}" on:mouseenter="{() => selected = _key}">
                 {#if option.icon}
-                  {@html option.icon}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+                    {@html option.icon}
+                  </svg>
                 {/if}
                 <span>{@html fuzzyHighlight(option.title, filter)}</span>
                 {#if option.id}
