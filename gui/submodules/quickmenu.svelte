@@ -445,12 +445,12 @@
       <input type="text"
         bind:this="{nodes.input}"
         bind:value="{filter}"
-        placeholder="{translate('Search with <m>...', [ name, $language ])}"
+        placeholder="{translate('Search...', $language)}"
         on:keydown="{onInputKeydown}">
       {#if selectable.length}
         <ul class="quick-menu-suggestions" bind:this="{nodes.suggestions}">
           {#each Object.entries(suggestions) as [key, cluster ]}
-            <li class="heading"><em>{translate(cluster.title, language)}</em></li>
+            <li class="heading"><em>{translate(cluster.title, $language)}</em></li>
             {#each cluster.options as option}
               {@const _key = `${key}:${option.index}`}
               <li class:selected="{selected === _key}"
