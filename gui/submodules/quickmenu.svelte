@@ -40,7 +40,10 @@
 
       ranges.push([ offset ]);
     }
-    return ranges.length;
+
+    let weight = 0;
+    ranges.forEach(range => weight += range.length);
+    return weight;
   }
 
 
@@ -357,7 +360,7 @@
     const highestWeight = {};
 
     for (const [ key, extension ] of _extensions) {
-      highestWeight[key] = 0;
+      highestWeight[key] = 1;
 
       const options = typeof extension.items === 'function' ? await extension.items() : extension.items;
 
@@ -402,7 +405,7 @@
     const sortedEntries = suggestionEntries.sort((left, right) => {
       const leftWeight = highestWeight[left[0]];
       const rightWeight = highestWeight[right[0]];
-      const position = (leftWeight < rightWeight) ? -1 : (rightWeight < leftWeight) ? 1 : 0;
+      const position = (leftWeight > rightWeight) ? -1 : (rightWeight > leftWeight) ? 1 : 0;
       return position;
     });
 
