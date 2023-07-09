@@ -117,7 +117,7 @@
 
   const app = getContext('app');
 
-  $: extensions = $app.items || {};
+  $: extensions = $app.registered || {};
 
   let visible = false;
 
