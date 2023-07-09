@@ -367,7 +367,15 @@
       };
 
       const _options = options.flatMap(option => {
-        const weight = match ? fuzzy(option.title, match) : 0;
+        const pinned = option.id && pins.includes(option.id);
+
+        // Pinned has weight by default
+        let weight = pinned ? 1 : 0;
+
+        if (match) {
+          weight = fuzzy(option.title, match);
+        }
+
         if (!weight) {
           // No weight, filter out
           return [];
@@ -377,7 +385,7 @@
           highestWeight[key] = weight;
         }
 
-        const pinned =  option.id && pins.includes(option.id);
+
         return { weight, option, pinned };
       });
 
