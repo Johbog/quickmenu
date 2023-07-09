@@ -133,7 +133,7 @@
   }
 
   $: selectable = Object.entries(suggestions).flatMap(([ key, cluster ]) => {
-    const keys = cluster.options.map(option => `${key}:${option.id}`);
+    const keys = cluster.options.map(option => `${key}:${option.index}`);
     return keys;
   });
 
@@ -291,8 +291,8 @@
       case 'Enter': {
         const _selected = selected || selectable[0];
         if (_selected) {
-          const [ cluster, id ] = _selected.split(':');
-          const option = suggestions[cluster].options.find(option => option.id === id);
+          const [ cluster, index ] = _selected.split(':');
+          const option = suggestions[cluster].options.find(option => option.index === Number(index));
           if (event.shiftKey) {
             if (selected) {
               // Should only trigger for highlighted options
@@ -369,7 +369,7 @@
         options: [],
       };
 
-      const _options = options.flatMap(option => {
+      const _options = options.flatMap((option, index) => {
         const pinned = option.id && pins.includes(option.id);
 
         // Pinned has weight by default
@@ -389,13 +389,13 @@
         }
 
 
-        return { weight, option, pinned };
+        return { weight, option, pinned, index };
       });
 
       cluster.options = _options.sort((left, right) => {
         const position = (left.weight < right.weight) ? -1 : (right.weight < left.weight) ? 1 : 0;
         return position;
-      }).map(item => item.option);
+      }).map(item => ({ index: item.index, ...item.option }));
 
       if (cluster.options.length) {
         suggestionEntries.push([ key, cluster ]);
@@ -454,7 +454,7 @@
           {#each Object.entries(suggestions) as [key, cluster ]}
             <li class="heading"><em>{translate(cluster.title, $language)}</em></li>
             {#each cluster.options as option}
-              {@const _key = `${key}:${option.id}`}
+              {@const _key = `${key}:${option.index}`}
               <li class:selected="{selected === _key}"
                 class:pinned="{option.id ? pins.includes(option.id) : false}"
                 on:click="{() => onOptionClick(option)}" on:mouseenter="{() => selected = _key}">
