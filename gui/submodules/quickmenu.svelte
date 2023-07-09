@@ -360,9 +360,22 @@
     const highestWeight = {};
 
     for (const [ key, extension ] of _extensions) {
-      highestWeight[key] = 1;
-
       const options = typeof extension.items === 'function' ? await extension.items() : extension.items;
+
+      if (!match) {
+        // No filter, only show suggestions for pinned items
+        options.forEach((option, index) => {
+          if (!pins.includes(option.id)) {
+            return;
+          }
+
+          pinned.options.push({ index, ...option });
+        });
+
+        continue;
+      }
+
+      highestWeight[key] = 0;
 
       const cluster = {
         title: extension.title,
@@ -370,15 +383,7 @@
       };
 
       const _options = options.flatMap((option, index) => {
-        const pinned = option.id && pins.includes(option.id);
-
-        // Pinned has weight by default
-        let weight = pinned ? 1 : 0;
-
-        if (match) {
-          weight = fuzzy(option.title, match);
-        }
-
+        const weight = fuzzy(option.title, match);
         if (!weight) {
           // No weight, filter out
           return [];
@@ -388,8 +393,7 @@
           highestWeight[key] = weight;
         }
 
-
-        return { weight, option, pinned, index };
+        return { weight, option, index };
       });
 
       cluster.options = _options.sort((left, right) => {
@@ -412,7 +416,7 @@
     const _suggestions = Object.fromEntries(sortedEntries);
 
     if (pinned.options.length) {
-      suggestions = Object.assign({ pinned }, _suggestions);
+      suggestions = { pinned };
     }
     else {
       suggestions = _suggestions;
